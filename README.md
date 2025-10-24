@@ -92,6 +92,29 @@ Generates:
 pub enum ExampleStructField;
 ```
 
+### Aliasing generated enums
+
+By default, the generated enums are named `*Field` and `*FieldKey`.  
+You add an additional type alias by adding `#[fields_alias(...)]` or `#[field_keys_alias(...)]` to the struct.
+
+```rs
+#[derive(Fields, FieldKeys)]
+#[fields_alias(FooField)]
+#[field_keys_alias(BarKey)]
+pub struct ExampleStruct;
+```
+
+Generates:
+
+```rs
+pub type FooField = ExampleStructField;
+pub type BarKey = ExampleStructFieldKey;
+```
+
+### Serde support
+
+If you enable the `keys-serde` or `fields-serde` features, the corresponding enums will automatically implement `serde::Serialize` and `serde::Deserialize`.
+
 ## Testing
 
 `cargo test --test tests --all-features`
