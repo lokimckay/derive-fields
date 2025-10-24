@@ -1,8 +1,9 @@
+use crate::EnumKind;
 use syn::{DeriveInput, Token, punctuated::Punctuated};
 
 /// Parse an attribute like `#[keys_enum_derives(Debug, Clone)]`
-pub(crate) fn get_derives(input: &DeriveInput, attr_name: &str) -> Vec<syn::Path> {
-    input
+pub(crate) fn get_derives(input: &DeriveInput, attr_name: &str, kind: &EnumKind) -> Vec<syn::Path> {
+    let mut derives: Vec<syn::Path> = input
         .attrs
         .iter()
         .find(|attr| attr.path().is_ident(attr_name))
@@ -11,7 +12,34 @@ pub(crate) fn get_derives(input: &DeriveInput, attr_name: &str) -> Vec<syn::Path
                 .ok()
                 .map(|punctuated| punctuated.into_iter().collect())
         })
-        .unwrap_or_default()
+        .unwrap_or_default();
+
+    if derives.is_empty() {
+        derives = match kind {
+            EnumKind::Fields => vec![
+                syn::parse_quote!(Debug),
+                syn::parse_quote!(Clone),
+                #[cfg(feature = "fields-serde")]
+                syn::parse_quote!(serde::Serialize),
+                #[cfg(feature = "fields-serde")]
+                syn::parse_quote!(serde::Deserialize),
+            ],
+            EnumKind::FieldKeys => vec![
+                syn::parse_quote!(Debug),
+                syn::parse_quote!(Clone),
+                syn::parse_quote!(Copy),
+                syn::parse_quote!(PartialEq),
+                syn::parse_quote!(Eq),
+                syn::parse_quote!(std::hash::Hash),
+                #[cfg(feature = "keys-serde")]
+                syn::parse_quote!(serde::Serialize),
+                #[cfg(feature = "keys-serde")]
+                syn::parse_quote!(serde::Deserialize),
+            ],
+        }
+    }
+
+    derives
 }
 
 #[cfg(test)]
@@ -26,7 +54,7 @@ mod tests {
             struct MyStruct;
         };
 
-        let derives = get_derives(&input, "my_derives");
+        let derives = get_derives(&input, "my_derives", &EnumKind::Fields);
         let derive_names: Vec<String> = derives
             .iter()
             .map(|p| p.segments.last().unwrap().ident.to_string())
@@ -41,7 +69,7 @@ mod tests {
             struct MyStruct;
         };
 
-        let derives = get_derives(&input, "my_derives");
+        let derives = get_derives(&input, "my_derives", &EnumKind::Fields);
         assert!(derives.is_empty());
     }
 
@@ -52,7 +80,7 @@ mod tests {
             struct MyStruct;
         };
 
-        let derives = get_derives(&input, "my_derives");
+        let derives = get_derives(&input, "my_derives", &EnumKind::Fields);
         assert!(derives.is_empty());
     }
 }

@@ -6,15 +6,24 @@ edition = "2024"
 [lib]
 proc-macro = true
 
+[features]
+default = []
+keys-serde = ["serde"]
+fields-serde = ["serde"]
+
 [[test]]
 name = "tests"
 path = "tests/main.rs"
+required-features = ["keys-serde", "fields-serde"]
 
 [dev-dependencies]
 trybuild = "1.0.112"
+serde_json = "1"
+serde = { version = "1", features = ["derive"] }
 
 [dependencies]
 convert_case = "0.8"
 proc-macro2 = "1"
 quote = "1"
+serde = { version = "1", features = ["derive"], optional = true }
 syn = "2"
