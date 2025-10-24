@@ -1,6 +1,8 @@
-## Usage
+# Derive Fields
 
-The available usages and their expected outputs are listed below.
+Macros to derive enums describing the fields of a struct
+
+## Usage
 
 ### `#[derive(Fields)]`
 
