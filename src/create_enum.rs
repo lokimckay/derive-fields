@@ -1,4 +1,4 @@
-use crate::{get_alias::get_alias, get_derives::get_derives};
+use crate::{get_derives::get_derives, get_enum_name::get_enum_name};
 
 use convert_case::Casing;
 use proc_macro::TokenStream;
@@ -12,21 +12,8 @@ pub(crate) enum EnumKind {
 
 pub(crate) fn create_enum(input: TokenStream, kind: EnumKind) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
-    let struct_name = input.ident.clone();
-    let enum_name = syn::Ident::new(
-        &format!(
-            "{}{}",
-            struct_name,
-            match &kind {
-                EnumKind::Fields => "Field",
-                EnumKind::FieldKeys => "FieldKey",
-            }
-        ),
-        struct_name.span(),
-    );
-
+    let enum_name = get_enum_name(&input, &kind);
     let derives = get_derives(&input, &kind);
-    let alias = get_alias(&input, &kind);
 
     let fields = match input.data {
         Data::Struct(ref s) => match s.fields {
@@ -57,15 +44,5 @@ pub(crate) fn create_enum(input: TokenStream, kind: EnumKind) -> TokenStream {
         }
     };
 
-    let alias_def = alias.map(|alias| {
-        quote! {
-            pub type #alias = #enum_name;
-        }
-    });
-
-    quote! {
-        #enum_def
-        #alias_def
-    }
-    .into()
+    enum_def.into()
 }

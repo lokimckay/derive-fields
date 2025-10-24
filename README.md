@@ -62,21 +62,21 @@ pub enum ExampleStructField;
 pub enum ExampleStructFieldKey;
 ```
 
-### Aliasing generated enums
+### Renaming generated enums
 
 By default, the generated enums are named `*Field` and `*FieldKey`.  
-You can add an additional type alias by adding `#[fields_alias(...)]` or `#[field_keys_alias(...)]` to the struct.
+You can override these by adding `#[fields_name(...)]` or `#[field_keys_name(...)]` to the struct.
 
 ```rs
 #[derive(Fields, FieldKeys)]
-#[fields_alias(FooField)]
-#[field_keys_alias(BarKey)]
+#[fields_name(FooField)]
+#[field_keys_name(BarKey)]
 pub struct ExampleStruct;
 ```
 
 ```rs
-pub type FooField = ExampleStructField;
-pub type BarKey = ExampleStructFieldKey;
+pub enum FooField { ... }
+pub enum BarKey { ... }
 ```
 
 ### Serde support
