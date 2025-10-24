@@ -4,6 +4,12 @@ Macros to derive enums describing the fields of a struct
 
 ## Usage
 
+Add as a dependency to your `Cargo.toml`:
+
+```toml
+derive-fields = { git = "https://github.com/lokimckay/derive-fields.git", branch = "main" }
+```
+
 ### `#[derive(Fields)]`
 
 ```rs
