@@ -1,4 +1,4 @@
-use crate::get_derives::get_derives;
+use crate::{get_alias::get_alias, get_derives::get_derives};
 
 use convert_case::Casing;
 use proc_macro::TokenStream;
@@ -25,12 +25,8 @@ pub(crate) fn create_enum(input: TokenStream, kind: EnumKind) -> TokenStream {
         struct_name.span(),
     );
 
-    let derive_attr_name = match kind {
-        EnumKind::Fields => "fields_derives",
-        EnumKind::FieldKeys => "field_keys_derives",
-    };
-
-    let derives = get_derives(&input, derive_attr_name, &kind);
+    let derives = get_derives(&input, &kind);
+    let alias = get_alias(&input, &kind);
 
     let fields = match input.data {
         Data::Struct(ref s) => match s.fields {
@@ -61,5 +57,15 @@ pub(crate) fn create_enum(input: TokenStream, kind: EnumKind) -> TokenStream {
         }
     };
 
-    enum_def.into()
+    let alias_def = alias.map(|alias| {
+        quote! {
+            pub type #alias = #enum_name;
+        }
+    });
+
+    quote! {
+        #enum_def
+        #alias_def
+    }
+    .into()
 }

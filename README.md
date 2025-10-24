@@ -94,4 +94,4 @@ pub enum ExampleStructField;
 
 ## Testing
 
-`cargo test --test tests`
+`cargo test --test tests --all-features`

@@ -1,7 +1,3 @@
 {
-  "rust-analyzer.files.exclude": [
-    "tests/fields_derives.rs",
-    "tests/field_keys_derives.rs",
-    "tests/serde.rs"
-  ]
+  "rust-analyzer.files.exclude": ["tests/derives.rs", "tests/serde.rs"]
 }

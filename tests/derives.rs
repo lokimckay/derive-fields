@@ -1,10 +1,11 @@
 mod common;
 
 use common::*;
-use derive_fields::Fields;
+use derive_fields::{FieldKeys, Fields};
 
-#[derive(Fields)]
+#[derive(Fields, FieldKeys)]
 #[fields_derives(Debug)]
+#[field_keys_derives(Debug)]
 pub struct ExampleStruct {
     _name: String,
     _category: Category,
@@ -12,7 +13,9 @@ pub struct ExampleStruct {
 }
 
 fn main() {
-    // Confirm that field no longer implements clone
+    // Confirm that key and field no longer implement clone
+    let key = ExampleStructFieldKey::Name;
     let field = ExampleStructField::Name("Albert".to_string());
+    let _ = key.clone();
     let _ = field.clone();
 }

@@ -1,14 +1,18 @@
 use crate::EnumKind;
-use syn::{DeriveInput, Token, punctuated::Punctuated};
+use syn::{DeriveInput, Path, Token, parse_quote, punctuated::Punctuated};
 
-/// Parse an attribute like `#[keys_enum_derives(Debug, Clone)]`
-pub(crate) fn get_derives(input: &DeriveInput, attr_name: &str, kind: &EnumKind) -> Vec<syn::Path> {
-    let mut derives: Vec<syn::Path> = input
+pub(crate) fn get_derives(input: &DeriveInput, kind: &EnumKind) -> Vec<Path> {
+    let attr_name = match kind {
+        EnumKind::Fields => "fields_derives",
+        EnumKind::FieldKeys => "field_keys_derives",
+    };
+
+    let mut derives: Vec<Path> = input
         .attrs
         .iter()
         .find(|attr| attr.path().is_ident(attr_name))
         .and_then(|attr| {
-            attr.parse_args_with(Punctuated::<syn::Path, Token![,]>::parse_terminated)
+            attr.parse_args_with(Punctuated::<Path, Token![,]>::parse_terminated)
                 .ok()
                 .map(|punctuated| punctuated.into_iter().collect())
         })
@@ -17,24 +21,24 @@ pub(crate) fn get_derives(input: &DeriveInput, attr_name: &str, kind: &EnumKind)
     if derives.is_empty() {
         derives = match kind {
             EnumKind::Fields => vec![
-                syn::parse_quote!(Debug),
-                syn::parse_quote!(Clone),
+                parse_quote!(Debug),
+                parse_quote!(Clone),
                 #[cfg(feature = "fields-serde")]
-                syn::parse_quote!(serde::Serialize),
+                parse_quote!(serde::Serialize),
                 #[cfg(feature = "fields-serde")]
-                syn::parse_quote!(serde::Deserialize),
+                parse_quote!(serde::Deserialize),
             ],
             EnumKind::FieldKeys => vec![
-                syn::parse_quote!(Debug),
-                syn::parse_quote!(Clone),
-                syn::parse_quote!(Copy),
-                syn::parse_quote!(PartialEq),
-                syn::parse_quote!(Eq),
-                syn::parse_quote!(std::hash::Hash),
+                parse_quote!(Debug),
+                parse_quote!(Clone),
+                parse_quote!(Copy),
+                parse_quote!(PartialEq),
+                parse_quote!(Eq),
+                parse_quote!(std::hash::Hash),
                 #[cfg(feature = "keys-serde")]
-                syn::parse_quote!(serde::Serialize),
+                parse_quote!(serde::Serialize),
                 #[cfg(feature = "keys-serde")]
-                syn::parse_quote!(serde::Deserialize),
+                parse_quote!(serde::Deserialize),
             ],
         }
     }
@@ -50,11 +54,11 @@ mod tests {
     #[test]
     fn test_parses_correctly() {
         let input = parse_quote! {
-            #[my_derives(Debug, Clone, Copy)]
+            #[fields_derives(Debug, Clone, Copy)]
             struct MyStruct;
         };
 
-        let derives = get_derives(&input, "my_derives", &EnumKind::Fields);
+        let derives = get_derives(&input, &EnumKind::Fields);
         let derive_names: Vec<String> = derives
             .iter()
             .map(|p| p.segments.last().unwrap().ident.to_string())
@@ -69,7 +73,7 @@ mod tests {
             struct MyStruct;
         };
 
-        let derives = get_derives(&input, "my_derives", &EnumKind::Fields);
+        let derives = get_derives(&input, &EnumKind::Fields);
         assert!(derives.is_empty());
     }
 
@@ -80,7 +84,7 @@ mod tests {
             struct MyStruct;
         };
 
-        let derives = get_derives(&input, "my_derives", &EnumKind::Fields);
+        let derives = get_derives(&input, &EnumKind::Fields);
         assert!(derives.is_empty());
     }
 }
