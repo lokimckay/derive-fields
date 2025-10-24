@@ -23,13 +23,13 @@ Useful if you want to partially represent a struct in something like a hashmap.
     ```
 
     ```rs
-    pub enum MyStructField {
+    enum MyStructField {
         Name(String),
         Category(Category),
         ReallyReallyLongKey(bool),
     }
 
-    pub enum MyStructFieldKey {
+    enum MyStructFieldKey {
         Name,
         Category,
         ReallyReallyLongKey,
@@ -51,15 +51,15 @@ You can override these defaults by adding `#[field_keys_derives(...)]` or `#[fie
 #[derive(Fields, FieldKeys)]
 #[fields_derives(Debug)]
 #[field_keys_derives(Debug)]
-pub struct ExampleStruct;
+struct ExampleStruct;
 ```
 
 ```rs
 #[derive(Debug)]
-pub enum ExampleStructField;
+enum ExampleStructField;
 
 #[derive(Debug)]
-pub enum ExampleStructFieldKey;
+enum ExampleStructFieldKey;
 ```
 
 ### Renaming generated enums
@@ -71,12 +71,12 @@ You can override these by adding `#[fields_name(...)]` or `#[field_keys_name(...
 #[derive(Fields, FieldKeys)]
 #[fields_name(FooField)]
 #[field_keys_name(BarKey)]
-pub struct ExampleStruct;
+struct ExampleStruct;
 ```
 
 ```rs
-pub enum FooField { ... }
-pub enum BarKey { ... }
+enum FooField { ... }
+enum BarKey { ... }
 ```
 
 ### Serde support
