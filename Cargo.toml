@@ -6,6 +6,10 @@ edition = "2024"
 [lib]
 proc-macro = true
 
+[[test]]
+name = "tests"
+path = "tests/main.rs"
+
 [dev-dependencies]
 trybuild = "1.0.112"
 

@@ -1,6 +1,7 @@
 # Derive Fields
 
-Macros to derive enums describing the fields of a struct
+Macros to derive enums describing the fields of a struct.  
+Useful if you want to partially represent a struct in something like a hashmap.
 
 ## Usage
 
@@ -46,4 +47,47 @@ pub enum MyStructFieldKey {
     Category,
     ReallyReallyLongKey,
 }
+```
+
+### Adding derives to generated enums
+
+By default,
+
+- `*FieldKeys` implements `Debug + Clone + Copy + PartialEq + Eq + Hash`
+- `*Field` implements `Debug + Clone`
+
+You can override these defaults by adding `#[field_keys_derives(...)]` or `#[fields_derives(...)]` to the struct.
+
+#### `#[field_keys_derives(...)]`
+
+Adds derives to the generated `*FieldKeys` enum.
+
+```rs
+#[derive(FieldKeys)]
+#[field_keys_derives(Debug)]
+pub struct ExampleStruct;
+```
+
+Generates:
+
+```rs
+#[derive(Debug)]
+pub enum ExampleStructFieldKey;
+```
+
+#### `#[fields_derives(...)]`
+
+Adds derives to the generated `*Field` enum.
+
+```rs
+#[derive(Fields)]
+#[fields_derives(Debug)]
+pub struct ExampleStruct;
+```
+
+Generates:
+
+```rs
+#[derive(Debug)]
+pub enum ExampleStructField;
 ```

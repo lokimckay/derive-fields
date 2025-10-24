@@ -30,7 +30,21 @@ pub(crate) fn create_enum(input: TokenStream, kind: EnumKind) -> TokenStream {
         EnumKind::FieldKeys => "field_keys_derives",
     };
 
-    let derives = get_derives(&input, derive_attr_name);
+    let mut derives = get_derives(&input, derive_attr_name);
+
+    if derives.is_empty() {
+        derives = match kind {
+            EnumKind::Fields => vec![syn::parse_quote!(Debug), syn::parse_quote!(Clone)],
+            EnumKind::FieldKeys => vec![
+                syn::parse_quote!(Debug),
+                syn::parse_quote!(Clone),
+                syn::parse_quote!(Copy),
+                syn::parse_quote!(PartialEq),
+                syn::parse_quote!(Eq),
+                syn::parse_quote!(std::hash::Hash),
+            ],
+        }
+    }
 
     let fields = match input.data {
         Data::Struct(ref s) => match s.fields {
