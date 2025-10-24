@@ -91,3 +91,7 @@ Generates:
 #[derive(Debug)]
 pub enum ExampleStructField;
 ```
+
+## Testing
+
+`cargo test --test tests`
