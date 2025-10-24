@@ -5,97 +5,67 @@ Useful if you want to partially represent a struct in something like a hashmap.
 
 ## Usage
 
-Add as a dependency to your `Cargo.toml`:
+1.  Add as a dependency to your `Cargo.toml`
 
-```toml
-derive-fields = { git = "https://github.com/lokimckay/derive-fields.git", branch = "main" }
-```
+    ```toml
+    derive-fields = { git = "https://github.com/lokimckay/derive-fields.git", branch = "main" }
+    ```
 
-### `#[derive(Fields)]`
+2.  Add one or both derive macros `Fields`, `FieldKeys` to your struct
 
-```rs
-#[derive(Fields)]
-struct MyStruct {
-    name: String,
-    category: Category,
-    really_really_long_key: bool,
-}
-```
+    ```rs
+    #[derive(Fields, FieldKeys)]
+    struct MyStruct {
+        name: String,
+        category: Category,
+        really_really_long_key: bool,
+    }
+    ```
 
-```rs
-pub enum MyStructField {
-    Name(String),
-    Category(Category),
-    ReallyReallyLongKey(bool),
-}
-```
+    ```rs
+    pub enum MyStructField {
+        Name(String),
+        Category(Category),
+        ReallyReallyLongKey(bool),
+    }
 
-### `#[derive(FieldKeys)]`
+    pub enum MyStructFieldKey {
+        Name,
+        Category,
+        ReallyReallyLongKey,
+    }
+    ```
 
-```rs
-#[derive(FieldKeys)]
-struct MyStruct {
-    name: String,
-    category: Category,
-    really_really_long_key: bool,
-}
-```
-
-```rs
-pub enum MyStructFieldKey {
-    Name,
-    Category,
-    ReallyReallyLongKey,
-}
-```
+## Configuration
 
 ### Adding derives to generated enums
 
 By default,
 
-- `*FieldKeys` implements `Debug + Clone + Copy + PartialEq + Eq + Hash`
 - `*Field` implements `Debug + Clone`
+- `*FieldKeys` implements `Debug + Clone + Copy + PartialEq + Eq + Hash`
 
 You can override these defaults by adding `#[field_keys_derives(...)]` or `#[fields_derives(...)]` to the struct.
 
-#### `#[field_keys_derives(...)]`
-
-Adds derives to the generated `*FieldKeys` enum.
-
 ```rs
-#[derive(FieldKeys)]
+#[derive(Fields, FieldKeys)]
+#[fields_derives(Debug)]
 #[field_keys_derives(Debug)]
 pub struct ExampleStruct;
 ```
 
-Generates:
-
-```rs
-#[derive(Debug)]
-pub enum ExampleStructFieldKey;
-```
-
-#### `#[fields_derives(...)]`
-
-Adds derives to the generated `*Field` enum.
-
-```rs
-#[derive(Fields)]
-#[fields_derives(Debug)]
-pub struct ExampleStruct;
-```
-
-Generates:
-
 ```rs
 #[derive(Debug)]
 pub enum ExampleStructField;
+
+#[derive(Debug)]
+pub enum ExampleStructFieldKey;
 ```
 
 ### Aliasing generated enums
 
 By default, the generated enums are named `*Field` and `*FieldKey`.  
-You add an additional type alias by adding `#[fields_alias(...)]` or `#[field_keys_alias(...)]` to the struct.
+You can add an additional type alias by adding `#[fields_alias(...)]` or `#[field_keys_alias(...)]` to the struct.
 
 ```rs
 #[derive(Fields, FieldKeys)]
@@ -103,8 +73,6 @@ You add an additional type alias by adding `#[fields_alias(...)]` or `#[field_ke
 #[field_keys_alias(BarKey)]
 pub struct ExampleStruct;
 ```
-
-Generates:
 
 ```rs
 pub type FooField = ExampleStructField;
