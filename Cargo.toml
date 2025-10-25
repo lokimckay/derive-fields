@@ -7,14 +7,15 @@ edition = "2024"
 proc-macro = true
 
 [features]
-default = []
+default = ["iter"]
+iter = []
 keys-serde = ["serde"]
 fields-serde = ["serde"]
 
 [[test]]
 name = "tests"
 path = "tests/main.rs"
-required-features = ["keys-serde", "fields-serde"]
+required-features = ["iter", "keys-serde", "fields-serde"]
 
 [dev-dependencies]
 trybuild = "1.0.112"

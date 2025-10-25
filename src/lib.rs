@@ -1,6 +1,7 @@
 mod create_enum;
 mod get_derives;
 mod get_enum_name;
+mod get_iter_impl;
 
 use create_enum::{EnumKind, create_enum};
 use proc_macro::TokenStream;

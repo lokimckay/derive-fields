@@ -6,6 +6,7 @@ fn tests() {
     t.pass("tests/field_keys.rs");
     t.pass("tests/fields.rs");
     t.pass("tests/hashmap.rs");
+    t.pass("tests/iter.rs");
     t.pass("tests/override_name.rs");
     #[cfg(all(feature = "keys-serde", feature = "fields-serde"))]
     t.pass("tests/serde.rs");

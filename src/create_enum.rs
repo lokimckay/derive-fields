@@ -1,9 +1,9 @@
-use crate::{get_derives::get_derives, get_enum_name::get_enum_name};
+use crate::{get_derives::get_derives, get_enum_name::get_enum_name, get_iter_impl::get_iter_impl};
 
 use convert_case::Casing;
 use proc_macro::TokenStream;
 use quote::quote;
-use syn::{Data, DeriveInput, Fields, parse_macro_input};
+use syn::{Data, DeriveInput, Fields, Ident, Type, parse_macro_input};
 
 pub(crate) enum EnumKind {
     Fields,
@@ -23,26 +23,37 @@ pub(crate) fn create_enum(input: TokenStream, kind: EnumKind) -> TokenStream {
         _ => panic!("Only structs supported"),
     };
 
-    let variants = fields.iter().map(|f| {
-        let field_name = f.ident.as_ref().unwrap();
-        let variant_name = syn::Ident::new(
-            &field_name.to_string().to_case(convert_case::Case::Pascal),
-            field_name.span(),
-        );
-        let ty = &f.ty;
+    let variants: Vec<(Ident, Type)> = fields
+        .iter()
+        .map(|f| {
+            let field_name = f.ident.as_ref().unwrap();
+            (
+                syn::Ident::new(
+                    &field_name.to_string().to_case(convert_case::Case::Pascal),
+                    field_name.span(),
+                ),
+                f.ty.clone(),
+            )
+        })
+        .collect();
 
-        match kind {
-            EnumKind::Fields => quote! { #variant_name(#ty) },
-            EnumKind::FieldKeys => quote! { #variant_name },
-        }
+    let variant_defs = variants.iter().map(|(ident, ty)| match kind {
+        EnumKind::Fields => quote! { #ident(#ty) },
+        EnumKind::FieldKeys => quote! { #ident },
     });
 
     let enum_def = quote! {
         #[derive( #( #derives ),* )]
         pub enum #enum_name {
-            #( #variants, )*
+            #( #variant_defs, )*
         }
     };
 
-    enum_def.into()
+    let iter_impl = get_iter_impl(enum_name, variants, &kind);
+
+    quote! {
+        #enum_def
+        #iter_impl
+    }
+    .into()
 }

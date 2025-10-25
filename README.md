@@ -79,6 +79,25 @@ enum FooField { ... }
 enum BarKey { ... }
 ```
 
+### Iterator support
+
+If you enable the `iter` feature (on by default), the `*FieldKeys` enum will be iterable.
+
+```rs
+#[derive(FieldKeys)]
+pub struct ExampleStruct {
+    _name: String,
+    _category: Category,
+    _really_really_long_key: bool,
+}
+
+fn main() {
+    for field in ExampleStructFieldKey::iter() {
+        let _ = format!("{field:?}");
+    }
+}
+```
+
 ### Serde support
 
 If you enable the `keys-serde` or `fields-serde` features, the corresponding enums will automatically implement `serde::Serialize` and `serde::Deserialize`.
