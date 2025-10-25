@@ -49,7 +49,7 @@ pub(crate) fn create_enum(input: TokenStream, kind: EnumKind) -> TokenStream {
         }
     };
 
-    let iter_impl = get_iter_impl(enum_name, variants, &kind);
+    let iter_impl = get_iter_impl(enum_name, &kind);
 
     quote! {
         #enum_def

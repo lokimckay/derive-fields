@@ -8,8 +8,6 @@ use ExampleStructField as Value;
 use ExampleStructFieldKey as Key;
 
 #[derive(FieldKeys, Fields)]
-#[fields_derives(Debug, Clone)]
-#[field_keys_derives(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct ExampleStruct {
     _name: String,
     _category: Category,

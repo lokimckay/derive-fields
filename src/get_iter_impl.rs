@@ -1,25 +1,16 @@
 use crate::EnumKind;
 use proc_macro2::TokenStream;
 use quote::quote;
-use syn::{Ident, Type};
+use syn::Ident;
 
 #[cfg(feature = "iter")]
-pub(crate) fn get_iter_impl(
-    enum_name: Ident,
-    variants: Vec<(Ident, Type)>,
-    kind: &EnumKind,
-) -> TokenStream {
+pub(crate) fn get_iter_impl(enum_name: Ident, kind: &EnumKind) -> TokenStream {
     match kind {
         EnumKind::FieldKeys => {
-            let variant_defs = variants
-                .iter()
-                .map(|(ident, _)| quote! { #enum_name::#ident });
-
             quote! {
-
                 impl #enum_name {
-                    pub fn iter() -> impl Iterator<Item = #enum_name> {
-                        [ #( #variant_defs ),* ].into_iter()
+                    pub fn iter() -> impl Iterator<Item = Self> {
+                        <#enum_name as strum::IntoEnumIterator>::iter()
                     }
                 }
             }

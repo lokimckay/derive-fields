@@ -35,6 +35,7 @@ pub(crate) fn get_derives(input: &DeriveInput, kind: &EnumKind) -> Vec<Path> {
                 parse_quote!(PartialEq),
                 parse_quote!(Eq),
                 parse_quote!(std::hash::Hash),
+                parse_quote!(strum::EnumIter),
                 #[cfg(feature = "keys-serde")]
                 parse_quote!(serde::Serialize),
                 #[cfg(feature = "keys-serde")]

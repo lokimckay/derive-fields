@@ -8,7 +8,7 @@ proc-macro = true
 
 [features]
 default = ["iter"]
-iter = []
+iter = ["strum"]
 keys-serde = ["serde"]
 fields-serde = ["serde"]
 
@@ -27,4 +27,5 @@ convert_case = "0.8"
 proc-macro2 = "1"
 quote = "1"
 serde = { version = "1", features = ["derive"], optional = true }
+strum = { version = "0.27", features = ["derive"], optional = true }
 syn = "2"

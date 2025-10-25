@@ -81,7 +81,7 @@ enum BarKey { ... }
 
 ### Iterator support
 
-If you enable the `iter` feature (on by default), the `*FieldKeys` enum will be iterable.
+The `iter` feature flag (on by default) enables iteration of the `*FieldKeys` enum via the `[strum](https://docs.rs/strum/latest/strum)` crate.
 
 ```rs
 #[derive(FieldKeys)]
